@@ -20,19 +20,67 @@
 
         const { useState } = React
 
+        function Modal({
+
+            title,
+
+            content,
+
+            show = false,
+
+            onClose = () => { },
+            onConfirm = () => { }
+
+        }) {
+
+            return show && ReactDOM.createPortal(
+
+                <div className="modal-container">
+
+                    <div className="modal">
+
+                        <h2>{title}</h2>
+
+                        {content}
+                        <div>
+                            <button onClick={onClose}>Annulla</button>
+                            <button onClick={onConfirm}>Conferma</button>
+                        </div>
+
+                    </div>
+
+                </div>,
+
+                document.body
+
+            )
+
+        }
+
+
         const AnimalList = () => {
-            const [animali, setAnimali] = useState([])
             const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"]
-            const estrazioneAnimali = () => {
-                const rimanenti = animalsChoices.filter(animal => !animali.includes(animal));
-                if (rimanenti.length === 0) return;
-                const animaleEstratto = rimanenti[Math.floor(Math.random() * rimanenti.length)];
-                setAnimali([...animali, animaleEstratto]);
-            };
+
+            const [animali, setAnimali] = useState([])
+            const [show, setShow] = useState(false)
+            const [newAnimal, setNewAmimal] = useState("")
+
+            // const estrazioneAnimali = () => {
+            //     const rimanenti = animalsChoices.filter(animal => !animali.includes(animal));
+            //     if (rimanenti.length === 0) return;
+            //     const animaleEstratto = rimanenti[Math.floor(Math.random() * rimanenti.length)];
+            //     setAnimali([...animali, animaleEstratto]);
+            // };
+            const aggiungiAnimale = () => {
+                if (!newAnimal) return;
+                setAnimali(curr => [...curr, newAnimal])
+                setNewAmimal('')
+                setShow(false)
+            }
             return (
 
                 <div>
-                    <button onClick={estrazioneAnimali}>Aggiungi animale</button>
+                    <button onClick={() => setShow(true)}>Aggiungi animale</button>
                     <details>
                         <summary>Animali</summary>
                         <ul>
@@ -41,6 +89,18 @@
                             ))}
                         </ul>
                     </details>
+                    <Modal
+                        show={show}
+                        onClose={() => setShow(false)}
+                        onConfirm={aggiungiAnimale}
+                        title="Aggiungi un nuovo animale"
+                        content={
+                            <input
+                                type="text"
+                                value={newAnimal}
+                                onChange={e => setNewAmimal(e.target.value)}
+                            />}
+                    />
                 </div>
             )
         }
